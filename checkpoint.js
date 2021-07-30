@@ -7,10 +7,10 @@
 // NO DEBEN MODIFICAR EL ARCHIVO DS.js SINO QUE TODO SU CÓDIGO TENDRÁ QUE ESTAR EN ESTE ARCHIVO checkpoint.js
 
 const {
-  Queue,
-  Node,
-  LinkedList,
-  BinarySearchTree
+    Queue,
+    Node,
+    LinkedList,
+    BinarySearchTree
 } = require('./DS.js');
 
 // ----------------------
@@ -37,8 +37,19 @@ const {
 //  - Caso que devuelve false --> isAncestor(genealogyTree, "Jacqueline Bouvier", "Abigail Simpson")
 //  [Observar los tests para otros casos]
 
-var isAncestor = function(genealogyTree, ancestor, descendant){
-  // Tu código aca:
+var isAncestor = function(genealogyTree, ancestor, descendant) {
+    // Tu código aca:
+    let par = genealogyTree.hasOwnProperty(ancestor);
+    if (par) {
+        par = false;
+        for (const key in genealogyTree[ancestor]) {
+            current = genealogyTree[ancestor][key]
+            if (genealogyTree.hasOwnProperty(current)) par = par || isAncestor(genealogyTree, current, descendant);
+            if (current === descendant) par = true;
+        }
+    }
+    return par;
+
 
 }
 
@@ -76,9 +87,21 @@ var isAncestor = function(genealogyTree, ancestor, descendant){
 // PISTA: Pueden utilizar el método Object.keys() para f(1)
 
 function secuenciaHenry(obj, n) {
-  // Tu código aca:
+    // Tu código aca:
+    if (n == 0) {
+        return obj['first'];
+    } else if (n == 1) {
+        return Object.keys(obj).length;
+    } else if (n <= 0) {
+        return null;
+    } else {
+        return secuenciaHenry(obj, n - 1) * secuenciaHenry(obj, n - 2) - secuenciaHenry(obj, n - 2);
+    }
 
 }
+
+
+
 
 // ---------------------
 
@@ -96,9 +119,18 @@ function secuenciaHenry(obj, n) {
 //    lista.add(3);
 //    lista.size(); --> 3
 
-LinkedList.prototype.size = function(){
-  // Tu código aca:
+LinkedList.prototype.size = function() {
+    // Tu código aca:
+    let size = 0
+    let current = this.head;
+    if (!current) return size;
 
+    size = 1;
+    while (current.next) {
+        size++;
+        current = current.next
+    }
+    return size;
 }
 
 
@@ -117,9 +149,8 @@ LinkedList.prototype.size = function(){
 // Ejemplo 2:
 //    Suponiendo que se pide una posición inválida: removeFromPos(8) --> false
 
-LinkedList.prototype.switchPos = function(pos1, pos2){
-  // Tu código aca:
-
+LinkedList.prototype.switchPos = function(pos1, pos2) {
+    // Tu código aca:
 }
 
 // EJERCICIO 5
@@ -133,8 +164,18 @@ LinkedList.prototype.switchPos = function(pos1, pos2){
 // Nota: las listas enlazadas mergeadas intercalandose.
 // El nodo 1 de la lista 1, se conecta con el nodo 1 de la lista 2.
 // Continuando con el nodo 2 de la lista 2, conectandose con el nodo 2 de la lista 2.
-var mergeLinkedLists = function(linkedListOne, linkedListTwo){
-  // Tu código aca:
+var mergeLinkedLists = function(linkedListOne, linkedListTwo) {
+    // Tu código aca:
+    current = linkedListOne.head;
+    current2 = linkedListTwo.head;
+    let newList = new LinkedList()
+    while (current) {
+        newList.add(current.value)
+        current = current.next;
+        newList.add(current2.value)
+        current2 = current2.next;
+    }
+    return newList;
 
 }
 
@@ -181,8 +222,8 @@ var mergeLinkedLists = function(linkedListOne, linkedListTwo){
 // finalizar el juego.
 
 
-var cardGame = function(playerOneCards, playerTwoCards){
-  // Tu código aca:
+var cardGame = function(playerOneCards, playerTwoCards) {
+    // Tu código aca:
 
 }
 
@@ -205,9 +246,8 @@ var cardGame = function(playerOneCards, playerTwoCards){
 // Este arbol tiene una altura de 4
 // PISTA: Una forma de resolverlo es pensarlo recursivamente y usando Math.max
 
-BinarySearchTree.prototype.height = function(){
-  // Tu código aca:
-
+BinarySearchTree.prototype.height = function() {
+    // Tu código aca:
 }
 
 
@@ -227,9 +267,25 @@ BinarySearchTree.prototype.height = function(){
 //    [Donde 2 sería el número sobre el cuál queremos saber su posición en el array]
 
 
-var binarySearch = function (array, target) {
-  // Tu código aca:
+var binarySearch = function(array, target) {
+    // Tu código aca:
+    let encontro = false;
+    let i = 0;
+    let size = array.length - 1;
+    let medio = 0;
+    let pos = -1;
 
+    while (!encontro && i < size) {
+        medio = Math.floor((i + size) / 2);
+        if (array[medio] === target) {
+            encontro = true;
+            pos = medio;
+        }
+        if (array[medio] < target) i = medio + 1;
+        if (array[medio] > target) size = medio - 1;
+
+    }
+    return pos;
 }
 
 // EJERCICIO 9
@@ -256,8 +312,23 @@ var binarySearch = function (array, target) {
 // ]
 
 var specialSort = function(array, orderFunction) {
-  // Tu código aca:
+    // Tu código aca:
 
+    var change = true;
+    while (change) {
+        change = false;
+        for (let i = 0; i < array.length - 1; i++) {
+            let order = orderFunction(array[i] > array[i + 1]);
+            if (order === -1) {
+                change = true;
+                var aux = array[i];
+                array[i] = array[i + 1];
+                array[i + 1] = aux;
+            }
+
+        }
+    }
+    return array;
 }
 
 // ----- Closures -----
@@ -289,21 +360,28 @@ var specialSort = function(array, orderFunction) {
 //  [Observar los tests para otros casos]
 
 function closureDetect(symptoms, min) {
-  // Tu código aca:
+    // Tu código aca:
+    return function(persona) {
+        var cont = 0;
+        for (const key in persona.symptoms) {
+            if (symptoms.indexOf(persona.symptoms[key]) != -1) cont++;
+        }
+        return cont >= min
+    }
 
 }
 
 // -------------------
 
 module.exports = {
-  isAncestor,
-  secuenciaHenry,
-  LinkedList,
-  Queue,
-  cardGame,
-  binarySearch,
-  specialSort,
-  closureDetect,
-  BinarySearchTree,
-  mergeLinkedLists
+    isAncestor,
+    secuenciaHenry,
+    LinkedList,
+    Queue,
+    cardGame,
+    binarySearch,
+    specialSort,
+    closureDetect,
+    BinarySearchTree,
+    mergeLinkedLists
 }
